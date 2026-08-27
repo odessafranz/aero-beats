@@ -63,7 +63,7 @@
 		.stat-label { color: var(--muted); display: block; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .1em; text-transform: uppercase; }
 		.stat-value { display: block; font-size: 25px; font-weight: 600; margin-top: 2px; }
 		.stat-value.accent { color: var(--yellow); }
-		.game-shell { width: min(100%, 820px); margin: 0 auto; display: grid; grid-template-columns: minmax(0, 1fr) 220px; gap: 18px; align-items: stretch; }
+		.game-shell { width: min(100%, 900px); margin: 0 auto; display: grid; grid-template-columns: minmax(0, 1fr) 185px; gap: 18px; align-items: stretch; }
 		.board-wrap, .side-panel { background: linear-gradient(145deg, rgba(255,255,255,.42), rgba(220,251,255,.22) 38%, rgba(99,207,191,.14)), rgba(241,253,255,.22); border: 2px solid rgba(255,255,255,.6); box-shadow: 0 20px 50px rgba(18, 117, 152, .2), inset 0 0 0 2px rgba(0,191,233,.12); backdrop-filter: blur(6px); }
 		.board-wrap { min-height: 500px; position: relative; padding: 14px; }
 		.board { background: linear-gradient(180deg, rgba(17, 118, 170, .42), rgba(6, 59, 118, .62)); border: 2px solid rgba(255,255,255,.72); height: 470px; display: grid; grid-template-columns: repeat(5, 1fr); gap: 7px; padding: 7px; position: relative; overflow: hidden; }
@@ -95,7 +95,7 @@
 		kbd { border: 1px solid var(--line); color: var(--cyan); font-family: 'DM Mono', monospace; font-size: 12px; padding: 7px 4px; text-align: center; }
 		.status { color: var(--yellow); font-family: 'DM Mono', monospace; font-size: 11px; line-height: 1.6; margin-top: auto; padding-top: 24px; }
 		.song-progress { color: #26718f; font-family: 'DM Mono', monospace; font-size: 10px; margin-top: 9px; }
-		body.playing .game-shell { width: min(100%, 1060px); grid-template-columns: minmax(0, 1fr) 250px; }
+		body.playing .game-shell { width: min(100%, 1180px); grid-template-columns: minmax(0, 1fr) 205px; }
 		body.playing .board-wrap { min-height: 615px; }
 		body.playing .board { height: 585px; }
 		body.playing .start-screen { display: none; }
@@ -120,9 +120,9 @@
 				<div class="board" id="board" aria-label="Game board">
 					<div class="lane" data-lane="0"></div><div class="lane" data-lane="1"></div><div class="lane" data-lane="2"></div><div class="lane" data-lane="3"></div><div class="lane" data-lane="4"></div>
 				</div>
-				<div class="start-screen" id="startScreen"><div class="start-content"><div class="eyebrow" id="levelEyebrow">Level 1 // three lanes</div><h2 id="screenTitle">Catch the<br>frequency.</h2><p id="screenCopy">Finish the song to unlock the next level. Three misses end the run.</p><button class="primary" id="startButton">Start level 1</button></div></div>
+				<div class="start-screen" id="startScreen"><div class="start-content"><div class="eyebrow" id="levelEyebrow">Level 1 // five lanes</div><h2 id="screenTitle">Catch the<br>frequency.</h2><p id="screenCopy">Five keys, one song. Three misses end the run.</p><button class="primary" id="startButton">Start level 1</button></div></div>
 			</div>
-			<aside class="side-panel"><div class="panel-title">Control deck</div><div class="tip"><strong>Stay in the flow</strong><p>Finish the song to master a level. New keys appear as the levels rise.</p><div class="keys" id="keys"><kbd>J</kbd><kbd>K</kbd><kbd>L</kbd></div><div class="song-progress" id="songProgress">SONG 00 / 91</div></div><div class="tip"><strong>Build your signal</strong><p>Clean hits increase the multiplier. A perfect run is worth chasing.</p></div><div class="status" id="status">SYSTEM READY<br>Awaiting input...</div></aside>
+			<aside class="side-panel"><div class="panel-title">Control deck</div><div class="tip"><strong>Stay in the flow</strong><p>Finish the song to master a level. All five keys are live from the start.</p><div class="keys" id="keys"><kbd>J</kbd><kbd>K</kbd><kbd>L</kbd><kbd>;</kbd><kbd>'</kbd></div><div class="song-progress" id="songProgress">SONG 00 / 91</div></div><div class="tip"><strong>Build your signal</strong><p>Clean hits increase the multiplier. A perfect run is worth chasing.</p></div><div class="status" id="status">SYSTEM READY<br>Awaiting input...</div><div class="song-progress">ORIGINAL AUDIO // NO SAMPLES</div></aside>
 		</section>
 	</main>
 	<script>
@@ -140,15 +140,15 @@
 		const keysLabel = document.getElementById('keys');
 		const songProgress = document.getElementById('songProgress');
 		const levelSongs = [
-			{ notes: 91, lanes: 3, tempo: 1000 },
-			{ notes: 101, lanes: 3, tempo: 900 },
-			{ notes: 111, lanes: 4, tempo: 820 },
-			{ notes: 121, lanes: 4, tempo: 750 },
+			{ notes: 91, lanes: 5, tempo: 1000 },
+			{ notes: 101, lanes: 5, tempo: 900 },
+			{ notes: 111, lanes: 5, tempo: 820 },
+			{ notes: 121, lanes: 5, tempo: 750 },
 			{ notes: 136, lanes: 5, tempo: 670 }
 		];
 		const keyLabels = ['J', 'K', 'L', ';', "'"];
 		const keyCodes = ['KeyJ', 'KeyK', 'KeyL', 'Semicolon', 'Quote'];
-		let score = 0, combo = 0, lives = 3, best = Number(localStorage.getItem('neon-pulse-best') || 0), active = false, currentLevel = 0, noteIndex = 0, songTimer, audioContext;
+		let score = 0, combo = 0, lives = 3, best = Number(localStorage.getItem('neon-pulse-best') || 0), active = false, currentLevel = 0, noteIndex = 0, songTimer, musicTimer, musicStep = 0, audioContext;
 		bestLabel.textContent = String(best).padStart(6, '0');
 
 		function updateScore() { scoreLabel.textContent = String(score).padStart(6, '0'); bestLabel.textContent = String(Math.max(best, score)).padStart(6, '0'); levelLabel.textContent = `${currentLevel + 1} / 5`; document.getElementById('lives').textContent = `${lives} / 3`; }
@@ -160,6 +160,12 @@
 		function playTone(frequency) {
 			audioContext ||= new AudioContext(); if (audioContext.state === 'suspended') audioContext.resume(); const oscillator = audioContext.createOscillator(); const gain = audioContext.createGain(); oscillator.frequency.value = frequency; oscillator.type = 'triangle'; gain.gain.setValueAtTime(.12, audioContext.currentTime); gain.gain.exponentialRampToValueAtTime(.001, audioContext.currentTime + .18); oscillator.connect(gain).connect(audioContext.destination); oscillator.start(); oscillator.stop(audioContext.currentTime + .18);
 		}
+		function playMusicTick() {
+			const bass = [110, 110, 130.81, 146.83, 164.81, 146.83, 130.81, 123.47][musicStep % 8]; const chord = [220, 261.63, 329.63, 293.66][currentLevel % 4];
+			[bass, chord, chord * 1.25].forEach((frequency, index) => { const oscillator = audioContext.createOscillator(); const gain = audioContext.createGain(); oscillator.type = index === 0 ? 'sine' : 'triangle'; oscillator.frequency.value = frequency; gain.gain.setValueAtTime(index === 0 ? .055 : .018, audioContext.currentTime); gain.gain.exponentialRampToValueAtTime(.001, audioContext.currentTime + .42); oscillator.connect(gain).connect(audioContext.destination); oscillator.start(); oscillator.stop(audioContext.currentTime + .42); }); musicStep++;
+		}
+		function startMusic() { audioContext ||= new AudioContext(); audioContext.resume(); musicStep = 0; playMusicTick(); clearInterval(musicTimer); musicTimer = window.setInterval(playMusicTick, 500); }
+		function stopMusic() { clearInterval(musicTimer); musicTimer = null; }
 		function createTile() {
 			if (!active || noteIndex >= levelSongs[currentLevel].notes) return;
 			const song = levelSongs[currentLevel]; const pattern = [0, 1, 2, 1, 0, 2, 1, 0, 2, 0, 1, 2, 1, 0, 2, 1, 0, 2, 3, 1, 2, 0, 3, 2, 4, 1, 3, 0, 2, 4, 1, 3, 2, 0, 4, 2]; const laneIndex = pattern[noteIndex % pattern.length] % song.lanes; const tile = document.createElement('button'); noteIndex++;
@@ -177,14 +183,14 @@
 			if (noteIndex >= levelSongs[currentLevel].notes && !board.querySelector('.tile:not(.hit)')) finishLevel();
 		}
 		function endGame() {
-			if (!active) return; active = false; clearTimeout(songTimer); lanes.forEach(lane => lane.querySelectorAll('.tile').forEach(tile => tile.remove()));
+			if (!active) return; active = false; clearTimeout(songTimer); stopMusic(); lanes.forEach(lane => lane.querySelectorAll('.tile').forEach(tile => tile.remove()));
 			best = Math.max(best, score); localStorage.setItem('neon-pulse-best', best); updateScore();
 			statusLabel.innerHTML = `SESSION ENDED<br>SCORE ${String(score).padStart(6, '0')} // STREAK ${combo}`;
 			startButton.textContent = `Retry level ${currentLevel + 1}`; startScreen.style.display = 'grid'; document.body.classList.remove('playing');
 		}
 		function registerMiss(tile) { tile.remove(); lives--; updateScore(); combo = 0; if (lives === 0) { endGame(); return; } statusLabel.innerHTML = `MISS // ${lives} CHANCES LEFT<br>KEEP FOLLOWING THE SONG`; }
-		function finishLevel() { active = false; clearTimeout(songTimer); best = Math.max(best, score); localStorage.setItem('neon-pulse-best', best); updateScore(); if (currentLevel < levelSongs.length - 1) { statusLabel.innerHTML = `LEVEL ${currentLevel + 1} MASTERED<br>NEXT SONG UNLOCKED`; currentLevel++; noteIndex = 0; updateLevelUi(); startButton.textContent = `Start level ${currentLevel + 1}`; screenTitle.innerHTML = 'New rhythm<br>unlocked.'; screenCopy.textContent = `You finished the song. Master level ${currentLevel + 1} to keep climbing.`; } else { statusLabel.innerHTML = 'ALL LEVELS MASTERED<br>FIVE-KEY SIGNAL COMPLETE'; startButton.textContent = 'Play again'; screenTitle.innerHTML = 'Full signal<br>complete.'; screenCopy.textContent = 'You mastered every song and unlocked all five keys.'; } startScreen.style.display = 'grid'; document.body.classList.remove('playing'); }
-		function startGame() { score = 0; combo = 0; lives = 3; noteIndex = 0; active = true; audioContext ||= new AudioContext(); audioContext.resume(); updateLevelUi(); updateScore(); document.body.classList.add('playing'); startScreen.style.display = 'none'; statusLabel.innerHTML = `LEVEL ${currentLevel + 1} LIVE<br>Follow the song...`; createTile(); }
+		function finishLevel() { active = false; clearTimeout(songTimer); stopMusic(); best = Math.max(best, score); localStorage.setItem('neon-pulse-best', best); updateScore(); if (currentLevel < levelSongs.length - 1) { statusLabel.innerHTML = `LEVEL ${currentLevel + 1} MASTERED<br>NEXT SONG UNLOCKED`; currentLevel++; noteIndex = 0; updateLevelUi(); startButton.textContent = `Start level ${currentLevel + 1}`; screenTitle.innerHTML = 'New rhythm<br>unlocked.'; screenCopy.textContent = `You finished the song. Master level ${currentLevel + 1} to keep climbing.`; } else { statusLabel.innerHTML = 'ALL LEVELS MASTERED<br>FIVE-KEY SIGNAL COMPLETE'; startButton.textContent = 'Play again'; screenTitle.innerHTML = 'Full signal<br>complete.'; screenCopy.textContent = 'You mastered every song and unlocked all five keys.'; } startScreen.style.display = 'grid'; document.body.classList.remove('playing'); }
+		function startGame() { score = 0; combo = 0; lives = 3; noteIndex = 0; active = true; audioContext ||= new AudioContext(); audioContext.resume(); startMusic(); updateLevelUi(); updateScore(); document.body.classList.add('playing'); startScreen.style.display = 'none'; statusLabel.innerHTML = `LEVEL ${currentLevel + 1} LIVE<br>Original 2000s-style mix playing...`; createTile(); }
 		function keyboardHit(key) { const index = keyCodes.indexOf(key); if (index < 0 || !active) return; const tiles = [...lanes[index].querySelectorAll('.tile:not(.hit)')]; if (tiles.length) hitTile(tiles[tiles.length - 1]); }
 		updateLevelUi(); startButton.addEventListener('click', startGame); document.addEventListener('keydown', event => { if (keyCodes.includes(event.code)) event.preventDefault(); if (event.key === 'Enter' && !active) startGame(); keyboardHit(event.code); });
 	</script>
