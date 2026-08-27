@@ -74,7 +74,7 @@
 		.tile::after { content: ''; position: absolute; inset: 7px; border: 1px solid rgba(255,255,255,.3); }
 		.tile.hit { animation: vanish .18s ease-out forwards; }
 		.tile.missed { opacity: .35; filter: saturate(.3); }
-		@keyframes fall { from { top: -86px; } to { top: calc(78% - 86px); } }
+		@keyframes fall { from { top: -86px; } to { top: calc(100% + 1px); } }
 		@keyframes vanish { to { transform: scale(.7); opacity: 0; } }
 		.start-screen { position: absolute; inset: 14px; display: grid; place-items: center; background: rgba(7,10,27,.3); z-index: 5; text-align: center; }
 		.start-content { max-width: 310px; padding: 25px; }
@@ -177,7 +177,7 @@
 		}
 		function hitTile(tile) {
 			if (!active || tile.classList.contains('hit')) return;
-			tile.classList.add('hit'); combo++; score += 100 + Math.min(combo, 20) * 10; updateScore(); playTone(420 + Number(tile.dataset.lane) * 90);
+			tile.classList.add('hit'); tile.remove(); combo++; score += 100 + Math.min(combo, 20) * 10; updateScore(); playTone(420 + Number(tile.dataset.lane) * 90);
 			statusLabel.innerHTML = `SIGNAL LOCKED<br>STREAK ${String(combo).padStart(2, '0')} // +${100 + Math.min(combo, 20) * 10}`;
 			lanes[tile.dataset.lane].classList.remove('pulse'); void lanes[tile.dataset.lane].offsetWidth; lanes[tile.dataset.lane].classList.add('pulse');
 			if (noteIndex >= levelSongs[currentLevel].notes && !board.querySelector('.tile:not(.hit)')) finishLevel();
