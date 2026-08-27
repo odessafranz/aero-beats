@@ -74,7 +74,7 @@
 		.tile::after { content: ''; position: absolute; inset: 7px; border: 1px solid rgba(255,255,255,.3); }
 		.tile.hit { animation: vanish .18s ease-out forwards; }
 		.tile.missed { opacity: .35; filter: saturate(.3); }
-		@keyframes fall { from { top: -86px; } to { top: calc(100% + 1px); } }
+		@keyframes fall { from { top: -86px; } to { top: calc(82% - 86px); } }
 		@keyframes vanish { to { transform: scale(.7); opacity: 0; } }
 		.start-screen { position: absolute; inset: 14px; display: grid; place-items: center; background: rgba(7,10,27,.3); z-index: 5; text-align: center; }
 		.start-content { max-width: 310px; padding: 25px; }
@@ -171,7 +171,7 @@
 			const song = levelSongs[currentLevel]; const pattern = [0, 1, 2, 1, 0, 2, 1, 0, 2, 0, 1, 2, 1, 0, 2, 1, 0, 2, 3, 1, 2, 0, 3, 2, 4, 1, 3, 0, 2, 4, 1, 3, 2, 0, 4, 2]; const laneIndex = pattern[noteIndex % pattern.length] % song.lanes; const tile = document.createElement('button'); noteIndex++;
 			tile.className = 'tile'; tile.setAttribute('aria-label', `Hit lane ${laneIndex + 1}`); tile.dataset.lane = laneIndex;
 			const speedRamp = 1 + (noteIndex / song.notes) * .85; const duration = Math.max(1.05, song.tempo / 300 / speedRamp); tile.style.animationDuration = `${duration}s`; lanes[laneIndex].appendChild(tile); songProgress.textContent = `SONG ${String(noteIndex).padStart(2, '0')} / ${song.notes}`; playTone(240 + laneIndex * 80);
-			tile.addEventListener('animationend', () => { if (tile.classList.contains('hit')) { tile.remove(); return; } registerMiss(tile); });
+			tile.addEventListener('animationend', () => { if (tile.classList.contains('hit')) { tile.remove(); return; } tile.classList.add('missed'); window.setTimeout(() => { if (active && !tile.classList.contains('hit') && !tile.dataset.missed) registerMiss(tile); }, 160); });
 			tile.addEventListener('pointerdown', event => { event.preventDefault(); hitTile(tile); });
 			if (noteIndex < song.notes) songTimer = window.setTimeout(createTile, song.tempo / speedRamp);
 		}
@@ -188,7 +188,7 @@
 			statusLabel.innerHTML = `SESSION ENDED<br>SCORE ${String(score).padStart(6, '0')} // STREAK ${combo}`;
 			startButton.textContent = `Retry level ${currentLevel + 1}`; startScreen.style.display = 'grid'; document.body.classList.remove('playing');
 		}
-		function registerMiss(tile) { tile.remove(); lives--; updateScore(); combo = 0; if (lives === 0) { endGame(); return; } statusLabel.innerHTML = `MISS // ${lives} CHANCES LEFT<br>KEEP FOLLOWING THE SONG`; }
+		function registerMiss(tile) { if (tile.dataset.missed) return; tile.dataset.missed = 'true'; tile.remove(); lives--; updateScore(); combo = 0; if (lives <= 0) { endGame(); return; } statusLabel.innerHTML = `MISS // ${lives} CHANCES LEFT<br>KEEP FOLLOWING THE SONG`; }
 		function finishLevel() { active = false; clearTimeout(songTimer); stopMusic(); best = Math.max(best, score); localStorage.setItem('neon-pulse-best', best); updateScore(); if (currentLevel < levelSongs.length - 1) { statusLabel.innerHTML = `LEVEL ${currentLevel + 1} MASTERED<br>NEXT SONG UNLOCKED`; currentLevel++; noteIndex = 0; updateLevelUi(); startButton.textContent = `Start level ${currentLevel + 1}`; screenTitle.innerHTML = 'New rhythm<br>unlocked.'; screenCopy.textContent = `You finished the song. Master level ${currentLevel + 1} to keep climbing.`; } else { statusLabel.innerHTML = 'ALL LEVELS MASTERED<br>FIVE-KEY SIGNAL COMPLETE'; startButton.textContent = 'Play again'; screenTitle.innerHTML = 'Full signal<br>complete.'; screenCopy.textContent = 'You mastered every song and unlocked all five keys.'; } startScreen.style.display = 'grid'; document.body.classList.remove('playing'); }
 		function startGame() { score = 0; combo = 0; lives = 3; noteIndex = 0; active = true; audioContext ||= new AudioContext(); audioContext.resume(); startMusic(); updateLevelUi(); updateScore(); document.body.classList.add('playing'); startScreen.style.display = 'none'; statusLabel.innerHTML = `LEVEL ${currentLevel + 1} LIVE<br>Original 2000s-style mix playing...`; createTile(); }
 		function keyboardHit(key) { const index = keyCodes.indexOf(key); if (index < 0 || !active) return; const tiles = [...lanes[index].querySelectorAll('.tile:not(.hit)')]; if (tiles.length) hitTile(tiles[tiles.length - 1]); }
