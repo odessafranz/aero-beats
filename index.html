@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Neon Pulse</title>
+	<style>
+		@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Orbitron:wght@500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+		:root {
+			--ink: #fffaff;
+			--muted: #c7b9d8;
+			--line: rgba(255, 255, 255, 0.35);
+			--panel: rgba(35, 22, 67, 0.74);
+			--cyan: #48fff2;
+			--coral: #ff5ebc;
+			--yellow: #d8ff4f;
+			--violet: #b98cff;
+		}
+
+		* { box-sizing: border-box; }
+		body {
+			margin: 0;
+			min-height: 100vh;
+			overflow-x: hidden;
+			color: var(--ink);
+			background: radial-gradient(circle at 12% 4%, #ff4fc3 0, transparent 23%), radial-gradient(circle at 88% 16%, #6948ff 0, transparent 27%), linear-gradient(135deg, #12062d 0%, #271052 52%, #071f4b 100%);
+			font-family: 'Space Grotesk', sans-serif;
+		}
+		body::before {
+			content: '';
+			position: fixed;
+			inset: 0;
+			pointer-events: none;
+			opacity: .4;
+			background-image: linear-gradient(rgba(72, 255, 242, .13) 1px, transparent 1px), linear-gradient(90deg, rgba(72, 255, 242, .13) 1px, transparent 1px);
+			background-size: 32px 32px;
+			transform: perspective(480px) rotateX(58deg) scale(1.5) translateY(120px);
+			transform-origin: bottom;
+		}
+		.app { width: min(100% - 40px, 1060px); margin: 0 auto; padding: 30px 0 38px; position: relative; }
+		header { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; margin-bottom: 27px; }
+		.brand { display: flex; gap: 13px; align-items: center; }
+		.mark { width: 38px; height: 38px; display: grid; place-items: center; border: 2px solid var(--cyan); color: #260b4a; background: linear-gradient(135deg, #fff 0%, var(--cyan) 45%, #9b5cff 100%); box-shadow: 4px 4px 0 var(--coral), 0 0 18px rgba(72,255,242,.7); transform: rotate(45deg); }
+		.mark span { transform: rotate(-45deg); font-size: 19px; font-weight: 700; }
+		h1 { margin: 0; color: #fff; font-family: 'Orbitron', sans-serif; font-size: clamp(25px, 4vw, 36px); letter-spacing: .06em; line-height: 1; text-shadow: 3px 3px 0 #ff5ebc, 0 0 18px rgba(72,255,242,.7); }
+		.tagline { color: var(--muted); font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: .08em; margin-top: 8px; text-transform: uppercase; }
+		.stats { display: flex; gap: 28px; text-align: right; }
+		.stat-label { color: var(--muted); display: block; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .1em; text-transform: uppercase; }
+		.stat-value { display: block; font-size: 25px; font-weight: 600; margin-top: 2px; }
+		.stat-value.accent { color: var(--yellow); }
+		.game-shell { display: grid; grid-template-columns: minmax(0, 1fr) 250px; gap: 18px; align-items: stretch; }
+		.board-wrap, .side-panel { background: linear-gradient(145deg, rgba(255,255,255,.2), transparent 22%), var(--panel); border: 1px solid var(--line); box-shadow: 0 20px 70px rgba(0, 0, 0, .34), inset 0 0 0 2px rgba(255,94,188,.14); backdrop-filter: blur(13px); }
+		.board-wrap { min-height: 615px; position: relative; padding: 14px; }
+		.board { background: linear-gradient(180deg, rgba(14, 4, 37, .78), rgba(5, 28, 57, .9)); border: 1px solid rgba(72,255,242,.4); height: 585px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 7px; padding: 7px; position: relative; overflow: hidden; }
+		.lane { position: relative; background: linear-gradient(180deg, rgba(255,255,255,.11), rgba(12, 17, 40, .76)); border: 1px solid rgba(255,255,255,.2); overflow: hidden; cursor: pointer; }
+		.lane:nth-child(2) { --tile: var(--coral); } .lane:nth-child(3) { --tile: var(--yellow); } .lane:nth-child(4) { --tile: var(--violet); }
+		.lane::after { content: ''; height: 22%; position: absolute; bottom: 0; left: 0; right: 0; border-top: 1px solid rgba(85,233,226,.5); background: linear-gradient(180deg, transparent, rgba(85,233,226,.07)); pointer-events: none; }
+		.tile { position: absolute; left: 7%; width: 86%; height: 86px; border: 2px solid rgba(255,255,255,.8); background: linear-gradient(145deg, #fff 0%, var(--tile, var(--cyan)) 24%, color-mix(in srgb, var(--tile, var(--cyan)) 60%, #6b1cff) 100%); box-shadow: 0 0 24px color-mix(in srgb, var(--tile, var(--cyan)) 65%, transparent), inset 0 0 12px rgba(255,255,255,.7); animation: fall linear forwards; cursor: pointer; }
+		.tile::after { content: ''; position: absolute; inset: 7px; border: 1px solid rgba(255,255,255,.3); }
+		.tile.hit { animation: vanish .18s ease-out forwards; }
+		.tile.missed { opacity: .35; filter: saturate(.3); }
+		@keyframes fall { from { transform: translateY(-105px); } to { transform: translateY(508px); } }
+		@keyframes vanish { to { transform: scale(.7); opacity: 0; } }
+		.start-screen { position: absolute; inset: 14px; display: grid; place-items: center; background: rgba(7,10,27,.68); z-index: 5; text-align: center; }
+		.start-content { max-width: 310px; padding: 25px; }
+		.eyebrow { color: var(--cyan); font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; }
+		.start-content h2 { font-family: 'Orbitron', sans-serif; font-size: 34px; line-height: 1.08; margin: 13px 0 12px; text-shadow: 3px 3px 0 #ff5ebc; }
+		.start-content p { color: var(--muted); font-size: 14px; line-height: 1.6; margin: 0 0 22px; }
+		button { font: inherit; }
+		.primary { border: 2px solid #fff; background: linear-gradient(180deg, #fff 0%, var(--cyan) 44%, #8b58ff 100%); color: #200a43; padding: 13px 22px; font-family: 'Orbitron', sans-serif; font-size: 12px; font-weight: 800; cursor: pointer; box-shadow: 4px 4px 0 var(--coral), 0 0 18px rgba(72,255,242,.45); transition: transform .2s, filter .2s; }
+		.primary:hover { filter: brightness(1.16); transform: translate(-2px, -2px); }
+		.side-panel { padding: 20px; display: flex; flex-direction: column; }
+		.panel-title { color: var(--muted); font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .1em; text-transform: uppercase; padding-bottom: 16px; border-bottom: 1px solid var(--line); }
+		.tip { border-bottom: 1px solid var(--line); padding: 18px 0; }
+		.tip strong { display: block; font-size: 15px; margin-bottom: 6px; }
+		.tip p { color: var(--muted); font-size: 12px; line-height: 1.55; margin: 0; }
+		.keys { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin-top: 10px; }
+		kbd { border: 1px solid var(--line); color: var(--cyan); font-family: 'DM Mono', monospace; font-size: 12px; padding: 7px 4px; text-align: center; }
+		.status { color: var(--yellow); font-family: 'DM Mono', monospace; font-size: 11px; line-height: 1.6; margin-top: auto; padding-top: 24px; }
+		.pulse { animation: pulse .3s ease-out; }
+		@keyframes pulse { 50% { background: rgba(85,233,226,.25); } }
+		@media (max-width: 760px) {
+			.app { width: min(100% - 24px, 540px); padding-top: 20px; }
+			header { margin-bottom: 18px; } .stats { gap: 14px; } .stat-value { font-size: 20px; }
+			.game-shell { grid-template-columns: 1fr; } .side-panel { min-height: 220px; } .board-wrap { min-height: 72vh; padding: 9px; } .board { height: 70vh; min-height: 480px; } .start-screen { inset: 9px; }
+		}
+	</style>
+</head>
+<body>
+	<main class="app">
+		<header>
+			<div class="brand"><div class="mark"><span>+</span></div><div><h1>NEON PULSE</h1><div class="tagline">A reflex rhythm challenge</div></div></div>
+			<div class="stats"><div><span class="stat-label">Score</span><span class="stat-value" id="score">000000</span></div><div><span class="stat-label">Best</span><span class="stat-value accent" id="best">000000</span></div></div>
+		</header>
+		<section class="game-shell">
+			<div class="board-wrap">
+				<div class="board" id="board" aria-label="Game board">
+					<div class="lane" data-lane="0"></div><div class="lane" data-lane="1"></div><div class="lane" data-lane="2"></div><div class="lane" data-lane="3"></div>
+				</div>
+				<div class="start-screen" id="startScreen"><div class="start-content"><div class="eyebrow">Four lanes // one rhythm</div><h2>Catch the<br>frequency.</h2><p>Tap each glowing tile as it reaches the pulse line. Miss one and the run ends.</p><button class="primary" id="startButton">Start session</button></div></div>
+			</div>
+			<aside class="side-panel"><div class="panel-title">Control deck</div><div class="tip"><strong>Stay in the flow</strong><p>Tiles accelerate as your streak grows. Keep your eyes on the line.</p><div class="keys"><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd><kbd>F</kbd></div></div><div class="tip"><strong>Build your signal</strong><p>Clean hits increase the multiplier. A perfect run is worth chasing.</p></div><div class="status" id="status">SYSTEM READY<br>Awaiting input...</div></aside>
+		</section>
+	</main>
+	<script>
+		const board = document.getElementById('board');
+		const lanes = [...document.querySelectorAll('.lane')];
+		const scoreLabel = document.getElementById('score');
+		const bestLabel = document.getElementById('best');
+		const statusLabel = document.getElementById('status');
+		const startScreen = document.getElementById('startScreen');
+		const startButton = document.getElementById('startButton');
+		let score = 0, combo = 0, best = Number(localStorage.getItem('neon-pulse-best') || 0), active = false, timer;
+		bestLabel.textContent = String(best).padStart(6, '0');
+
+		function updateScore() { scoreLabel.textContent = String(score).padStart(6, '0'); bestLabel.textContent = String(Math.max(best, score)).padStart(6, '0'); }
+		function createTile() {
+			if (!active) return;
+			const laneIndex = Math.floor(Math.random() * 4); const tile = document.createElement('button');
+			tile.className = 'tile'; tile.setAttribute('aria-label', `Hit lane ${laneIndex + 1}`); tile.dataset.lane = laneIndex;
+			const duration = Math.max(1.3, 2.55 - combo * .025); tile.style.animationDuration = `${duration}s`; lanes[laneIndex].appendChild(tile);
+			tile.addEventListener('animationend', () => { if (!tile.classList.contains('hit')) endGame(); tile.remove(); });
+			tile.addEventListener('pointerdown', event => { event.preventDefault(); hitTile(tile); });
+			window.setTimeout(() => { if (active) createTile(); }, Math.max(420, 760 - combo * 8));
+		}
+		function hitTile(tile) {
+			if (!active || tile.classList.contains('hit')) return;
+			tile.classList.add('hit'); combo++; score += 100 + Math.min(combo, 20) * 10; updateScore();
+			statusLabel.innerHTML = `SIGNAL LOCKED<br>STREAK ${String(combo).padStart(2, '0')} // +${100 + Math.min(combo, 20) * 10}`;
+			lanes[tile.dataset.lane].classList.remove('pulse'); void lanes[tile.dataset.lane].offsetWidth; lanes[tile.dataset.lane].classList.add('pulse');
+		}
+		function endGame() {
+			if (!active) return; active = false; clearTimeout(timer); lanes.forEach(lane => lane.querySelectorAll('.tile').forEach(tile => tile.remove()));
+			best = Math.max(best, score); localStorage.setItem('neon-pulse-best', best); updateScore();
+			statusLabel.innerHTML = `SESSION ENDED<br>SCORE ${String(score).padStart(6, '0')} // STREAK ${combo}`;
+			startButton.textContent = 'Run it back'; startScreen.style.display = 'grid';
+		}
+		function startGame() { score = 0; combo = 0; active = true; updateScore(); startScreen.style.display = 'none'; statusLabel.innerHTML = 'SIGNAL LIVE<br>Find the pulse line...'; createTile(); timer = window.setTimeout(() => active && endGame(), 30000); }
+		function keyboardHit(key) { const index = ['a', 's', 'd', 'f'].indexOf(key.toLowerCase()); if (index < 0 || !active) return; const tiles = [...lanes[index].querySelectorAll('.tile:not(.hit)')]; if (tiles.length) hitTile(tiles[tiles.length - 1]); }
+		startButton.addEventListener('click', startGame); document.addEventListener('keydown', event => { if (event.key === 'Enter' && !active) startGame(); keyboardHit(event.key); });
+	</script>
+</body>
+</html>
+
