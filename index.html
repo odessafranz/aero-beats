@@ -74,7 +74,7 @@
 		.tile::after { content: ''; position: absolute; inset: 7px; border: 1px solid rgba(255,255,255,.3); }
 		.tile.hit { animation: vanish .18s ease-out forwards; }
 		.tile.missed { opacity: .35; filter: saturate(.3); }
-		@keyframes fall { from { top: -86px; } to { top: calc(100% + 1px); } }
+		@keyframes fall { from { top: -86px; } to { top: calc(78% - 86px); } }
 		@keyframes vanish { to { transform: scale(.7); opacity: 0; } }
 		.start-screen { position: absolute; inset: 14px; display: grid; place-items: center; background: rgba(7,10,27,.3); z-index: 5; text-align: center; }
 		.start-content { max-width: 310px; padding: 25px; }
