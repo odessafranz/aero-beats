@@ -8,14 +8,14 @@
 		@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Orbitron:wght@500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap');
 
 		:root {
-			--ink: #fffaff;
-			--muted: #c7b9d8;
-			--line: rgba(255, 255, 255, 0.35);
-			--panel: rgba(35, 22, 67, 0.74);
-			--cyan: #48fff2;
-			--coral: #ff5ebc;
-			--yellow: #d8ff4f;
-			--violet: #b98cff;
+			--ink: #08345a;
+			--muted: #47708c;
+			--line: rgba(255, 255, 255, 0.7);
+			--panel: rgba(241, 253, 255, 0.78);
+			--cyan: #00bfe9;
+			--coral: #ff6d78;
+			--yellow: #a4d92d;
+			--violet: #5ab6f5;
 		}
 
 		* { box-sizing: border-box; }
@@ -24,7 +24,7 @@
 			min-height: 100vh;
 			overflow-x: hidden;
 			color: var(--ink);
-			background: radial-gradient(circle at 12% 4%, #ff4fc3 0, transparent 23%), radial-gradient(circle at 88% 16%, #6948ff 0, transparent 27%), linear-gradient(135deg, #12062d 0%, #271052 52%, #071f4b 100%);
+			background: linear-gradient(rgba(29, 157, 199, .12), rgba(11, 105, 140, .2)), url('frutiger-aero-bg.jpg') center / cover fixed no-repeat;
 			font-family: 'Space Grotesk', sans-serif;
 		}
 		body::before {
@@ -32,52 +32,73 @@
 			position: fixed;
 			inset: 0;
 			pointer-events: none;
-			opacity: .4;
-			background-image: linear-gradient(rgba(72, 255, 242, .13) 1px, transparent 1px), linear-gradient(90deg, rgba(72, 255, 242, .13) 1px, transparent 1px);
-			background-size: 32px 32px;
-			transform: perspective(480px) rotateX(58deg) scale(1.5) translateY(120px);
-			transform-origin: bottom;
+			opacity: .16;
+			background: radial-gradient(circle at 8% 80%, rgba(255,255,255,.5) 0 10px, transparent 11px), radial-gradient(circle at 92% 62%, rgba(255,255,255,.42) 0 16px, transparent 17px), radial-gradient(circle at 78% 88%, rgba(255,255,255,.33) 0 7px, transparent 8px);
 		}
+		body::after { display: none; }
 		.app { width: min(100% - 40px, 1060px); margin: 0 auto; padding: 30px 0 38px; position: relative; }
+		.aero-scene { display: none; }
+		.sun { position: absolute; top: 7vh; right: 12vw; width: 105px; height: 105px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #fffde0, #ffeb55 52%, #ffbd3d 100%); box-shadow: 0 0 34px rgba(255, 240, 102, .75); }
+		.cloud { position: absolute; width: 154px; height: 35px; border-radius: 30px; background: rgba(255,255,255,.78); filter: drop-shadow(0 8px 7px rgba(34,132,177,.16)); }
+		.cloud::before, .cloud::after { content: ''; position: absolute; bottom: 8px; border-radius: 50%; background: inherit; }
+		.cloud::before { left: 26px; width: 56px; height: 56px; } .cloud::after { left: 72px; width: 43px; height: 43px; }
+		.cloud.one { top: 16vh; left: 5vw; transform: scale(.8); } .cloud.two { top: 27vh; right: 2vw; transform: scale(.58); opacity: .66; }
+		.bubble { position: absolute; border: 2px solid rgba(255,255,255,.7); border-radius: 50%; box-shadow: inset 4px 4px 5px rgba(255,255,255,.55), 0 0 12px rgba(255,255,255,.32); }
+		.bubble.one { width: 24px; height: 24px; left: 10vw; bottom: 26vh; } .bubble.two { width: 13px; height: 13px; left: 15vw; bottom: 33vh; } .bubble.three { width: 31px; height: 31px; right: 12vw; bottom: 20vh; }
+		.fish { position: absolute; width: 76px; height: 42px; border-radius: 58% 46% 46% 58%; background: linear-gradient(145deg, #fff 0%, #ffbd69 34%, #ff6c77 100%); border: 2px solid rgba(255,255,255,.85); box-shadow: inset -7px -5px 9px rgba(201,63,116,.26), 0 7px 15px rgba(24,102,159,.22); }
+		.fish::before { content: ''; position: absolute; right: 12px; top: 13px; width: 7px; height: 7px; border-radius: 50%; background: #174f77; box-shadow: 0 0 0 3px rgba(255,255,255,.72); }
+		.fish::after { content: ''; position: absolute; left: -25px; top: 2px; width: 0; height: 0; border-top: 19px solid transparent; border-bottom: 19px solid transparent; border-right: 28px solid #ff8a76; filter: drop-shadow(0 2px 1px rgba(177,59,102,.24)); }
+		.fish.one { top: 44vh; left: 3vw; transform: scale(.8) rotate(-4deg); } .fish.two { top: 66vh; right: 4vw; transform: scale(.58) rotate(8deg); filter: hue-rotate(115deg); }
+		.leaf { position: absolute; bottom: 8vh; width: 48px; height: 84px; border-radius: 100% 0 100% 0; background: linear-gradient(135deg, #d6ff73, #2eb778); box-shadow: inset 5px 0 rgba(255,255,255,.34); transform-origin: bottom center; }
+		.leaf::after { content: ''; position: absolute; width: 2px; height: 72px; left: 24px; top: 8px; background: rgba(21,119,97,.55); transform: rotate(35deg); }
+		.leaf.left { left: 1vw; transform: rotate(-28deg); } .leaf.right { right: 2vw; transform: scale(.72) rotate(34deg); }
 		header { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; margin-bottom: 27px; }
 		.brand { display: flex; gap: 13px; align-items: center; }
-		.mark { width: 38px; height: 38px; display: grid; place-items: center; border: 2px solid var(--cyan); color: #260b4a; background: linear-gradient(135deg, #fff 0%, var(--cyan) 45%, #9b5cff 100%); box-shadow: 4px 4px 0 var(--coral), 0 0 18px rgba(72,255,242,.7); transform: rotate(45deg); }
+		.mark { width: 38px; height: 38px; display: grid; place-items: center; border: 2px solid #fff; color: #08709b; background: linear-gradient(135deg, #fff 0%, #bffbff 45%, #4bc8ef 100%); box-shadow: 4px 4px 0 #64b838, 0 0 18px rgba(255,255,255,.8); transform: rotate(45deg); }
 		.mark span { transform: rotate(-45deg); font-size: 19px; font-weight: 700; }
-		h1 { margin: 0; color: #fff; font-family: 'Orbitron', sans-serif; font-size: clamp(25px, 4vw, 36px); letter-spacing: .06em; line-height: 1; text-shadow: 3px 3px 0 #ff5ebc, 0 0 18px rgba(72,255,242,.7); }
+		h1 { margin: 0; color: #fff; font-family: 'Orbitron', sans-serif; font-size: clamp(25px, 4vw, 36px); letter-spacing: .06em; line-height: 1; text-shadow: 2px 3px 0 #1989bd, 0 0 18px rgba(255,255,255,.9); }
 		.tagline { color: var(--muted); font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: .08em; margin-top: 8px; text-transform: uppercase; }
 		.stats { display: flex; gap: 28px; text-align: right; }
+		.level-stat { color: #18749a; font-family: 'Orbitron', sans-serif; font-size: 12px; font-weight: 700; margin-top: 7px; }
 		.stat-label { color: var(--muted); display: block; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .1em; text-transform: uppercase; }
 		.stat-value { display: block; font-size: 25px; font-weight: 600; margin-top: 2px; }
 		.stat-value.accent { color: var(--yellow); }
-		.game-shell { display: grid; grid-template-columns: minmax(0, 1fr) 250px; gap: 18px; align-items: stretch; }
-		.board-wrap, .side-panel { background: linear-gradient(145deg, rgba(255,255,255,.2), transparent 22%), var(--panel); border: 1px solid var(--line); box-shadow: 0 20px 70px rgba(0, 0, 0, .34), inset 0 0 0 2px rgba(255,94,188,.14); backdrop-filter: blur(13px); }
-		.board-wrap { min-height: 615px; position: relative; padding: 14px; }
-		.board { background: linear-gradient(180deg, rgba(14, 4, 37, .78), rgba(5, 28, 57, .9)); border: 1px solid rgba(72,255,242,.4); height: 585px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 7px; padding: 7px; position: relative; overflow: hidden; }
-		.lane { position: relative; background: linear-gradient(180deg, rgba(255,255,255,.11), rgba(12, 17, 40, .76)); border: 1px solid rgba(255,255,255,.2); overflow: hidden; cursor: pointer; }
+		.game-shell { width: min(100%, 820px); margin: 0 auto; display: grid; grid-template-columns: minmax(0, 1fr) 220px; gap: 18px; align-items: stretch; }
+		.board-wrap, .side-panel { background: linear-gradient(145deg, rgba(255,255,255,.42), rgba(220,251,255,.22) 38%, rgba(99,207,191,.14)), rgba(241,253,255,.22); border: 2px solid rgba(255,255,255,.6); box-shadow: 0 20px 50px rgba(18, 117, 152, .2), inset 0 0 0 2px rgba(0,191,233,.12); backdrop-filter: blur(6px); }
+		.board-wrap { min-height: 500px; position: relative; padding: 14px; }
+		.board { background: linear-gradient(180deg, rgba(17, 118, 170, .42), rgba(6, 59, 118, .62)); border: 2px solid rgba(255,255,255,.72); height: 470px; display: grid; grid-template-columns: repeat(5, 1fr); gap: 7px; padding: 7px; position: relative; overflow: hidden; }
+		.lane { position: relative; background: linear-gradient(180deg, rgba(151,238,255,.36), rgba(0, 72, 132, .74)); border: 1px solid rgba(255,255,255,.45); overflow: hidden; cursor: pointer; }
 		.lane:nth-child(2) { --tile: var(--coral); } .lane:nth-child(3) { --tile: var(--yellow); } .lane:nth-child(4) { --tile: var(--violet); }
-		.lane::after { content: ''; height: 22%; position: absolute; bottom: 0; left: 0; right: 0; border-top: 1px solid rgba(85,233,226,.5); background: linear-gradient(180deg, transparent, rgba(85,233,226,.07)); pointer-events: none; }
-		.tile { position: absolute; left: 7%; width: 86%; height: 86px; border: 2px solid rgba(255,255,255,.8); background: linear-gradient(145deg, #fff 0%, var(--tile, var(--cyan)) 24%, color-mix(in srgb, var(--tile, var(--cyan)) 60%, #6b1cff) 100%); box-shadow: 0 0 24px color-mix(in srgb, var(--tile, var(--cyan)) 65%, transparent), inset 0 0 12px rgba(255,255,255,.7); animation: fall linear forwards; cursor: pointer; }
+		.lane::after { content: ''; height: 22%; position: absolute; bottom: 0; left: 0; right: 0; border-top: 2px solid rgba(208,255,255,.9); background: linear-gradient(180deg, transparent, rgba(165,255,109,.38)); pointer-events: none; }
+		.tile { position: absolute; left: 7%; width: 86%; height: 86px; border: 2px solid rgba(255,255,255,.95); background: linear-gradient(145deg, #fff 0%, var(--tile, var(--cyan)) 24%, color-mix(in srgb, var(--tile, var(--cyan)) 60%, #168aca) 100%); box-shadow: 0 0 24px color-mix(in srgb, var(--tile, var(--cyan)) 65%, transparent), inset 0 0 12px rgba(255,255,255,.7); animation: fall linear forwards; cursor: pointer; }
 		.tile::after { content: ''; position: absolute; inset: 7px; border: 1px solid rgba(255,255,255,.3); }
 		.tile.hit { animation: vanish .18s ease-out forwards; }
 		.tile.missed { opacity: .35; filter: saturate(.3); }
-		@keyframes fall { from { transform: translateY(-105px); } to { transform: translateY(508px); } }
+		@keyframes fall { from { top: -86px; } to { top: calc(78% - 86px); } }
 		@keyframes vanish { to { transform: scale(.7); opacity: 0; } }
-		.start-screen { position: absolute; inset: 14px; display: grid; place-items: center; background: rgba(7,10,27,.68); z-index: 5; text-align: center; }
+		.start-screen { position: absolute; inset: 14px; display: grid; place-items: center; background: rgba(7,10,27,.3); z-index: 5; text-align: center; }
 		.start-content { max-width: 310px; padding: 25px; }
 		.eyebrow { color: var(--cyan); font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; }
-		.start-content h2 { font-family: 'Orbitron', sans-serif; font-size: 34px; line-height: 1.08; margin: 13px 0 12px; text-shadow: 3px 3px 0 #ff5ebc; }
+		.start-content h2 { font-family: 'Orbitron', sans-serif; font-size: 34px; line-height: 1.08; margin: 13px 0 12px; text-shadow: 2px 3px 0 #79c934; }
 		.start-content p { color: var(--muted); font-size: 14px; line-height: 1.6; margin: 0 0 22px; }
 		button { font: inherit; }
-		.primary { border: 2px solid #fff; background: linear-gradient(180deg, #fff 0%, var(--cyan) 44%, #8b58ff 100%); color: #200a43; padding: 13px 22px; font-family: 'Orbitron', sans-serif; font-size: 12px; font-weight: 800; cursor: pointer; box-shadow: 4px 4px 0 var(--coral), 0 0 18px rgba(72,255,242,.45); transition: transform .2s, filter .2s; }
+		.primary { border: 2px solid #fff; background: linear-gradient(180deg, #fff 0%, var(--cyan) 44%, #42a9dd 100%); color: #063d69; padding: 13px 22px; font-family: 'Orbitron', sans-serif; font-size: 12px; font-weight: 800; cursor: pointer; box-shadow: 4px 4px 0 #73c53d, 0 0 18px rgba(255,255,255,.7); transition: transform .2s, filter .2s; }
 		.primary:hover { filter: brightness(1.16); transform: translate(-2px, -2px); }
 		.side-panel { padding: 20px; display: flex; flex-direction: column; }
 		.panel-title { color: var(--muted); font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .1em; text-transform: uppercase; padding-bottom: 16px; border-bottom: 1px solid var(--line); }
 		.tip { border-bottom: 1px solid var(--line); padding: 18px 0; }
 		.tip strong { display: block; font-size: 15px; margin-bottom: 6px; }
+		.tip strong::before { content: '+'; display: inline-grid; place-items: center; width: 23px; height: 23px; margin-right: 8px; border: 2px solid #fff; border-radius: 50%; color: #fff; background: linear-gradient(145deg, #62efff, #168aca); box-shadow: 0 2px 5px rgba(9, 93, 137, .32); vertical-align: -6px; }
+		.tip:nth-of-type(2) strong::before { content: '~'; color: #438c19; background: linear-gradient(145deg, #f8ffb3, #a4d92d); }
 		.tip p { color: var(--muted); font-size: 12px; line-height: 1.55; margin: 0; }
-		.keys { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin-top: 10px; }
+		.keys { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; margin-top: 10px; }
 		kbd { border: 1px solid var(--line); color: var(--cyan); font-family: 'DM Mono', monospace; font-size: 12px; padding: 7px 4px; text-align: center; }
 		.status { color: var(--yellow); font-family: 'DM Mono', monospace; font-size: 11px; line-height: 1.6; margin-top: auto; padding-top: 24px; }
+		.song-progress { color: #26718f; font-family: 'DM Mono', monospace; font-size: 10px; margin-top: 9px; }
+		body.playing .game-shell { width: min(100%, 1060px); grid-template-columns: minmax(0, 1fr) 250px; }
+		body.playing .board-wrap { min-height: 615px; }
+		body.playing .board { height: 585px; }
+		body.playing .start-screen { display: none; }
 		.pulse { animation: pulse .3s ease-out; }
 		@keyframes pulse { 50% { background: rgba(85,233,226,.25); } }
 		@media (max-width: 760px) {
@@ -88,19 +109,20 @@
 	</style>
 </head>
 <body>
+	<div class="aero-scene" aria-hidden="true"><div class="sun"></div><div class="cloud one"></div><div class="cloud two"></div><div class="bubble one"></div><div class="bubble two"></div><div class="bubble three"></div><div class="fish one"></div><div class="fish two"></div><div class="leaf left"></div><div class="leaf right"></div></div>
 	<main class="app">
 		<header>
 			<div class="brand"><div class="mark"><span>+</span></div><div><h1>NEON PULSE</h1><div class="tagline">A reflex rhythm challenge</div></div></div>
-			<div class="stats"><div><span class="stat-label">Score</span><span class="stat-value" id="score">000000</span></div><div><span class="stat-label">Best</span><span class="stat-value accent" id="best">000000</span></div></div>
+			<div class="stats"><div><span class="stat-label">Score</span><span class="stat-value" id="score">000000</span></div><div><span class="stat-label">Best</span><span class="stat-value accent" id="best">000000</span></div><div><span class="stat-label">Level</span><span class="level-stat" id="level">1 / 5</span></div><div><span class="stat-label">Chances</span><span class="level-stat" id="lives">3 / 3</span></div></div>
 		</header>
 		<section class="game-shell">
 			<div class="board-wrap">
 				<div class="board" id="board" aria-label="Game board">
-					<div class="lane" data-lane="0"></div><div class="lane" data-lane="1"></div><div class="lane" data-lane="2"></div><div class="lane" data-lane="3"></div>
+					<div class="lane" data-lane="0"></div><div class="lane" data-lane="1"></div><div class="lane" data-lane="2"></div><div class="lane" data-lane="3"></div><div class="lane" data-lane="4"></div>
 				</div>
-				<div class="start-screen" id="startScreen"><div class="start-content"><div class="eyebrow">Four lanes // one rhythm</div><h2>Catch the<br>frequency.</h2><p>Tap each glowing tile as it reaches the pulse line. Miss one and the run ends.</p><button class="primary" id="startButton">Start session</button></div></div>
+				<div class="start-screen" id="startScreen"><div class="start-content"><div class="eyebrow" id="levelEyebrow">Level 1 // three lanes</div><h2 id="screenTitle">Catch the<br>frequency.</h2><p id="screenCopy">Finish the song to unlock the next level. Three misses end the run.</p><button class="primary" id="startButton">Start level 1</button></div></div>
 			</div>
-			<aside class="side-panel"><div class="panel-title">Control deck</div><div class="tip"><strong>Stay in the flow</strong><p>Tiles accelerate as your streak grows. Keep your eyes on the line.</p><div class="keys"><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd><kbd>F</kbd></div></div><div class="tip"><strong>Build your signal</strong><p>Clean hits increase the multiplier. A perfect run is worth chasing.</p></div><div class="status" id="status">SYSTEM READY<br>Awaiting input...</div></aside>
+			<aside class="side-panel"><div class="panel-title">Control deck</div><div class="tip"><strong>Stay in the flow</strong><p>Finish the song to master a level. New keys appear as the levels rise.</p><div class="keys" id="keys"><kbd>J</kbd><kbd>K</kbd><kbd>L</kbd></div><div class="song-progress" id="songProgress">SONG 00 / 91</div></div><div class="tip"><strong>Build your signal</strong><p>Clean hits increase the multiplier. A perfect run is worth chasing.</p></div><div class="status" id="status">SYSTEM READY<br>Awaiting input...</div></aside>
 		</section>
 	</main>
 	<script>
@@ -108,37 +130,63 @@
 		const lanes = [...document.querySelectorAll('.lane')];
 		const scoreLabel = document.getElementById('score');
 		const bestLabel = document.getElementById('best');
+		const levelLabel = document.getElementById('level');
 		const statusLabel = document.getElementById('status');
 		const startScreen = document.getElementById('startScreen');
 		const startButton = document.getElementById('startButton');
-		let score = 0, combo = 0, best = Number(localStorage.getItem('neon-pulse-best') || 0), active = false, timer;
+		const levelEyebrow = document.getElementById('levelEyebrow');
+		const screenTitle = document.getElementById('screenTitle');
+		const screenCopy = document.getElementById('screenCopy');
+		const keysLabel = document.getElementById('keys');
+		const songProgress = document.getElementById('songProgress');
+		const levelSongs = [
+			{ notes: 91, lanes: 3, tempo: 1000 },
+			{ notes: 101, lanes: 3, tempo: 900 },
+			{ notes: 111, lanes: 4, tempo: 820 },
+			{ notes: 121, lanes: 4, tempo: 750 },
+			{ notes: 136, lanes: 5, tempo: 670 }
+		];
+		const keyLabels = ['J', 'K', 'L', ';', "'"];
+		const keyCodes = ['KeyJ', 'KeyK', 'KeyL', 'Semicolon', 'Quote'];
+		let score = 0, combo = 0, lives = 3, best = Number(localStorage.getItem('neon-pulse-best') || 0), active = false, currentLevel = 0, noteIndex = 0, songTimer, audioContext;
 		bestLabel.textContent = String(best).padStart(6, '0');
 
-		function updateScore() { scoreLabel.textContent = String(score).padStart(6, '0'); bestLabel.textContent = String(Math.max(best, score)).padStart(6, '0'); }
+		function updateScore() { scoreLabel.textContent = String(score).padStart(6, '0'); bestLabel.textContent = String(Math.max(best, score)).padStart(6, '0'); levelLabel.textContent = `${currentLevel + 1} / 5`; document.getElementById('lives').textContent = `${lives} / 3`; }
+		function updateLevelUi() {
+			const song = levelSongs[currentLevel]; levelEyebrow.textContent = `Level ${currentLevel + 1} // ${song.lanes} lanes`; levelLabel.textContent = `${currentLevel + 1} / 5`;
+			keysLabel.innerHTML = keyLabels.slice(0, song.lanes).map(label => `<kbd>${label}</kbd>`).join(''); songProgress.textContent = `SONG ${String(Math.min(noteIndex, song.notes)).padStart(2, '0')} / ${song.notes}`;
+			lanes.forEach((lane, index) => { lane.style.display = index < song.lanes ? '' : 'none'; });
+		}
+		function playTone(frequency) {
+			audioContext ||= new AudioContext(); if (audioContext.state === 'suspended') audioContext.resume(); const oscillator = audioContext.createOscillator(); const gain = audioContext.createGain(); oscillator.frequency.value = frequency; oscillator.type = 'triangle'; gain.gain.setValueAtTime(.12, audioContext.currentTime); gain.gain.exponentialRampToValueAtTime(.001, audioContext.currentTime + .18); oscillator.connect(gain).connect(audioContext.destination); oscillator.start(); oscillator.stop(audioContext.currentTime + .18);
+		}
 		function createTile() {
-			if (!active) return;
-			const laneIndex = Math.floor(Math.random() * 4); const tile = document.createElement('button');
+			if (!active || noteIndex >= levelSongs[currentLevel].notes) return;
+			const song = levelSongs[currentLevel]; const pattern = [0, 1, 2, 1, 0, 2, 1, 0, 2, 0, 1, 2, 1, 0, 2, 1, 0, 2, 3, 1, 2, 0, 3, 2, 4, 1, 3, 0, 2, 4, 1, 3, 2, 0, 4, 2]; const laneIndex = pattern[noteIndex % pattern.length] % song.lanes; const tile = document.createElement('button'); noteIndex++;
 			tile.className = 'tile'; tile.setAttribute('aria-label', `Hit lane ${laneIndex + 1}`); tile.dataset.lane = laneIndex;
-			const duration = Math.max(1.3, 2.55 - combo * .025); tile.style.animationDuration = `${duration}s`; lanes[laneIndex].appendChild(tile);
-			tile.addEventListener('animationend', () => { if (!tile.classList.contains('hit')) endGame(); tile.remove(); });
+			const speedRamp = 1 + (noteIndex / song.notes) * .85; const duration = Math.max(1.05, song.tempo / 300 / speedRamp); tile.style.animationDuration = `${duration}s`; lanes[laneIndex].appendChild(tile); songProgress.textContent = `SONG ${String(noteIndex).padStart(2, '0')} / ${song.notes}`; playTone(240 + laneIndex * 80);
+			tile.addEventListener('animationend', () => { if (tile.classList.contains('hit')) { tile.remove(); return; } tile.classList.add('missed'); window.setTimeout(() => { if (active && !tile.classList.contains('hit')) registerMiss(tile); }, 450); });
 			tile.addEventListener('pointerdown', event => { event.preventDefault(); hitTile(tile); });
-			window.setTimeout(() => { if (active) createTile(); }, Math.max(420, 760 - combo * 8));
+			if (noteIndex < song.notes) songTimer = window.setTimeout(createTile, song.tempo / speedRamp);
 		}
 		function hitTile(tile) {
 			if (!active || tile.classList.contains('hit')) return;
-			tile.classList.add('hit'); combo++; score += 100 + Math.min(combo, 20) * 10; updateScore();
+			tile.classList.add('hit'); combo++; score += 100 + Math.min(combo, 20) * 10; updateScore(); playTone(420 + Number(tile.dataset.lane) * 90);
 			statusLabel.innerHTML = `SIGNAL LOCKED<br>STREAK ${String(combo).padStart(2, '0')} // +${100 + Math.min(combo, 20) * 10}`;
 			lanes[tile.dataset.lane].classList.remove('pulse'); void lanes[tile.dataset.lane].offsetWidth; lanes[tile.dataset.lane].classList.add('pulse');
+			if (noteIndex >= levelSongs[currentLevel].notes && !board.querySelector('.tile:not(.hit)')) finishLevel();
 		}
 		function endGame() {
-			if (!active) return; active = false; clearTimeout(timer); lanes.forEach(lane => lane.querySelectorAll('.tile').forEach(tile => tile.remove()));
+			if (!active) return; active = false; clearTimeout(songTimer); lanes.forEach(lane => lane.querySelectorAll('.tile').forEach(tile => tile.remove()));
 			best = Math.max(best, score); localStorage.setItem('neon-pulse-best', best); updateScore();
 			statusLabel.innerHTML = `SESSION ENDED<br>SCORE ${String(score).padStart(6, '0')} // STREAK ${combo}`;
-			startButton.textContent = 'Run it back'; startScreen.style.display = 'grid';
+			startButton.textContent = `Retry level ${currentLevel + 1}`; startScreen.style.display = 'grid'; document.body.classList.remove('playing');
 		}
-		function startGame() { score = 0; combo = 0; active = true; updateScore(); startScreen.style.display = 'none'; statusLabel.innerHTML = 'SIGNAL LIVE<br>Find the pulse line...'; createTile(); timer = window.setTimeout(() => active && endGame(), 30000); }
-		function keyboardHit(key) { const index = ['a', 's', 'd', 'f'].indexOf(key.toLowerCase()); if (index < 0 || !active) return; const tiles = [...lanes[index].querySelectorAll('.tile:not(.hit)')]; if (tiles.length) hitTile(tiles[tiles.length - 1]); }
-		startButton.addEventListener('click', startGame); document.addEventListener('keydown', event => { if (event.key === 'Enter' && !active) startGame(); keyboardHit(event.key); });
+		function registerMiss(tile) { tile.remove(); lives--; updateScore(); combo = 0; if (lives === 0) { endGame(); return; } statusLabel.innerHTML = `MISS // ${lives} CHANCES LEFT<br>KEEP FOLLOWING THE SONG`; }
+		function finishLevel() { active = false; clearTimeout(songTimer); best = Math.max(best, score); localStorage.setItem('neon-pulse-best', best); updateScore(); if (currentLevel < levelSongs.length - 1) { statusLabel.innerHTML = `LEVEL ${currentLevel + 1} MASTERED<br>NEXT SONG UNLOCKED`; currentLevel++; noteIndex = 0; updateLevelUi(); startButton.textContent = `Start level ${currentLevel + 1}`; screenTitle.innerHTML = 'New rhythm<br>unlocked.'; screenCopy.textContent = `You finished the song. Master level ${currentLevel + 1} to keep climbing.`; } else { statusLabel.innerHTML = 'ALL LEVELS MASTERED<br>FIVE-KEY SIGNAL COMPLETE'; startButton.textContent = 'Play again'; screenTitle.innerHTML = 'Full signal<br>complete.'; screenCopy.textContent = 'You mastered every song and unlocked all five keys.'; } startScreen.style.display = 'grid'; document.body.classList.remove('playing'); }
+		function startGame() { score = 0; combo = 0; lives = 3; noteIndex = 0; active = true; audioContext ||= new AudioContext(); audioContext.resume(); updateLevelUi(); updateScore(); document.body.classList.add('playing'); startScreen.style.display = 'none'; statusLabel.innerHTML = `LEVEL ${currentLevel + 1} LIVE<br>Follow the song...`; createTile(); }
+		function keyboardHit(key) { const index = keyCodes.indexOf(key); if (index < 0 || !active) return; const tiles = [...lanes[index].querySelectorAll('.tile:not(.hit)')]; if (tiles.length) hitTile(tiles[tiles.length - 1]); }
+		updateLevelUi(); startButton.addEventListener('click', startGame); document.addEventListener('keydown', event => { if (keyCodes.includes(event.code)) event.preventDefault(); if (event.key === 'Enter' && !active) startGame(); keyboardHit(event.code); });
 	</script>
 </body>
 </html>
