@@ -74,7 +74,7 @@
 		.tile::after { content: ''; position: absolute; inset: 7px; border: 1px solid rgba(255,255,255,.3); }
 		.tile.hit { animation: vanish .18s ease-out forwards; }
 		.tile.missed { opacity: .35; filter: saturate(.3); }
-		@keyframes fall { from { top: -86px; } to { top: calc(82% - 86px); } }
+		@keyframes fall { from { top: -86px; } to { top: calc(78% + 2px); } }
 		@keyframes vanish { to { transform: scale(.7); opacity: 0; } }
 		.start-screen { position: absolute; inset: 14px; display: grid; place-items: center; background: rgba(7,10,27,.3); z-index: 5; text-align: center; }
 		.start-content { max-width: 310px; padding: 25px; }
@@ -120,7 +120,7 @@
 				<div class="board" id="board" aria-label="Game board">
 					<div class="lane" data-lane="0"></div><div class="lane" data-lane="1"></div><div class="lane" data-lane="2"></div><div class="lane" data-lane="3"></div><div class="lane" data-lane="4"></div>
 				</div>
-				<div class="start-screen" id="startScreen"><div class="start-content"><div class="eyebrow" id="levelEyebrow">Level 1 // five lanes</div><h2 id="screenTitle">Catch the<br>frequency.</h2><p id="screenCopy">Five keys, one song. Three misses end the run.</p><button class="primary" id="startButton">Start level 1</button></div></div>
+				<div class="start-screen" id="startScreen"><div class="start-content"><div class="eyebrow" id="levelEyebrow">Level 1 // five lanes</div><h2 id="screenTitle">Catch the<br>frequency.</h2><p id="screenCopy">Hit each key in the order it appears. One wrong key ends the run.</p><button class="primary" id="startButton">Start level 1</button></div></div>
 			</div>
 			<aside class="side-panel"><div class="panel-title">Control deck</div><div class="tip"><strong>Stay in the flow</strong><p>Finish the song to master a level. All five keys are live from the start.</p><div class="keys" id="keys"><kbd>J</kbd><kbd>K</kbd><kbd>L</kbd><kbd>;</kbd><kbd>'</kbd></div><div class="song-progress" id="songProgress">SONG 00 / 91</div></div><div class="tip"><strong>Build your signal</strong><p>Clean hits increase the multiplier. A perfect run is worth chasing.</p></div><div class="status" id="status">SYSTEM READY<br>Awaiting input...</div><div class="song-progress">ORIGINAL AUDIO // NO SAMPLES</div></aside>
 		</section>
@@ -169,14 +169,16 @@
 		function createTile() {
 			if (!active || noteIndex >= levelSongs[currentLevel].notes) return;
 			const song = levelSongs[currentLevel]; const pattern = [0, 1, 2, 1, 0, 2, 1, 0, 2, 0, 1, 2, 1, 0, 2, 1, 0, 2, 3, 1, 2, 0, 3, 2, 4, 1, 3, 0, 2, 4, 1, 3, 2, 0, 4, 2]; const laneIndex = pattern[noteIndex % pattern.length] % song.lanes; const tile = document.createElement('button'); noteIndex++;
-			tile.className = 'tile'; tile.setAttribute('aria-label', `Hit lane ${laneIndex + 1}`); tile.dataset.lane = laneIndex;
+			tile.className = 'tile'; tile.setAttribute('aria-label', `Hit lane ${laneIndex + 1}`); tile.dataset.lane = laneIndex; tile.dataset.order = noteIndex;
 			const speedRamp = 1 + (noteIndex / song.notes) * .85; const duration = Math.max(1.05, song.tempo / 300 / speedRamp); tile.style.animationDuration = `${duration}s`; lanes[laneIndex].appendChild(tile); songProgress.textContent = `SONG ${String(noteIndex).padStart(2, '0')} / ${song.notes}`; playTone(240 + laneIndex * 80);
-			tile.addEventListener('animationend', () => { if (tile.classList.contains('hit')) { tile.remove(); return; } tile.classList.add('missed'); window.setTimeout(() => { if (active && !tile.classList.contains('hit') && !tile.dataset.missed) registerMiss(tile); }, 160); });
+			tile.addEventListener('animationend', () => { if (tile.classList.contains('hit')) { tile.remove(); return; } registerMiss(tile); });
 			tile.addEventListener('pointerdown', event => { event.preventDefault(); hitTile(tile); });
 			if (noteIndex < song.notes) songTimer = window.setTimeout(createTile, song.tempo / speedRamp);
 		}
+		function getNextTile() { return [...board.querySelectorAll('.tile:not(.hit)')].sort((first, second) => Number(first.dataset.order) - Number(second.dataset.order))[0]; }
 		function hitTile(tile) {
 			if (!active || tile.classList.contains('hit')) return;
+			if (tile !== getNextTile()) { statusLabel.innerHTML = 'WRONG ORDER<br>SESSION ENDED'; endGame(); return; }
 			tile.classList.add('hit'); tile.remove(); combo++; score += 100 + Math.min(combo, 20) * 10; updateScore(); playTone(420 + Number(tile.dataset.lane) * 90);
 			statusLabel.innerHTML = `SIGNAL LOCKED<br>STREAK ${String(combo).padStart(2, '0')} // +${100 + Math.min(combo, 20) * 10}`;
 			lanes[tile.dataset.lane].classList.remove('pulse'); void lanes[tile.dataset.lane].offsetWidth; lanes[tile.dataset.lane].classList.add('pulse');
@@ -191,7 +193,7 @@
 		function registerMiss(tile) { if (tile.dataset.missed) return; tile.dataset.missed = 'true'; tile.remove(); lives--; updateScore(); combo = 0; if (lives <= 0) { endGame(); return; } statusLabel.innerHTML = `MISS // ${lives} CHANCES LEFT<br>KEEP FOLLOWING THE SONG`; }
 		function finishLevel() { active = false; clearTimeout(songTimer); stopMusic(); best = Math.max(best, score); localStorage.setItem('neon-pulse-best', best); updateScore(); if (currentLevel < levelSongs.length - 1) { statusLabel.innerHTML = `LEVEL ${currentLevel + 1} MASTERED<br>NEXT SONG UNLOCKED`; currentLevel++; noteIndex = 0; updateLevelUi(); startButton.textContent = `Start level ${currentLevel + 1}`; screenTitle.innerHTML = 'New rhythm<br>unlocked.'; screenCopy.textContent = `You finished the song. Master level ${currentLevel + 1} to keep climbing.`; } else { statusLabel.innerHTML = 'ALL LEVELS MASTERED<br>FIVE-KEY SIGNAL COMPLETE'; startButton.textContent = 'Play again'; screenTitle.innerHTML = 'Full signal<br>complete.'; screenCopy.textContent = 'You mastered every song and unlocked all five keys.'; } startScreen.style.display = 'grid'; document.body.classList.remove('playing'); }
 		function startGame() { score = 0; combo = 0; lives = 3; noteIndex = 0; active = true; audioContext ||= new AudioContext(); audioContext.resume(); startMusic(); updateLevelUi(); updateScore(); document.body.classList.add('playing'); startScreen.style.display = 'none'; statusLabel.innerHTML = `LEVEL ${currentLevel + 1} LIVE<br>Original 2000s-style mix playing...`; createTile(); }
-		function keyboardHit(key) { const index = keyCodes.indexOf(key); if (index < 0 || !active) return; const tiles = [...lanes[index].querySelectorAll('.tile:not(.hit)')]; if (tiles.length) hitTile(tiles[tiles.length - 1]); }
+		function keyboardHit(key) { const index = keyCodes.indexOf(key); if (index < 0 || !active) return; const nextTile = getNextTile(); if (nextTile && Number(nextTile.dataset.lane) === index) hitTile(nextTile); else { statusLabel.innerHTML = 'WRONG ORDER<br>SESSION ENDED'; endGame(); } }
 		updateLevelUi(); startButton.addEventListener('click', startGame); document.addEventListener('keydown', event => { if (keyCodes.includes(event.code)) event.preventDefault(); if (event.key === 'Enter' && !active) startGame(); keyboardHit(event.code); });
 	</script>
 </body>
